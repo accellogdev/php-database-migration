@@ -1,5 +1,6 @@
 {
     "connection": {
+        "dotenvfile": "{DOTENVFILE}",
         "host": "{HOST}",
         "driver": "{DRIVER}",
         "port": "{PORT}",

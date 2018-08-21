@@ -18,7 +18,7 @@ class AbstractCommand extends Command {
 
     public function __construct()
     {
-        $this->mainDir = getcwd() . '/.php-database-migration';
+        $this->mainDir = getcwd() . '/database';
         $this->environmentDir = $this->mainDir . '/environments';
         $this->migrationDir = $this->mainDir . '/migrations';
 

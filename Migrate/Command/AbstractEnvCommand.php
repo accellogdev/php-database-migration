@@ -14,6 +14,7 @@ use Migrate\Migration;
 use Migrate\Utils\ArrayUtil;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Dotenv\Dotenv;
 
 class AbstractEnvCommand extends AbstractCommand
 {
@@ -58,14 +59,14 @@ class AbstractEnvCommand extends AbstractCommand
     
     protected function checkEnv()
     {
-        if (!file_exists(getcwd() . '/.php-database-migration/environments')) {
+        if (!file_exists(getcwd() . '/database/environments')) {
             throw new \RuntimeException("you are not in an initialized php-database-migration directory");
         }
     }
 
     protected function init(InputInterface $input, OutputInterface $output, $env = null)
     {
-        $configDirectory = getcwd() . '/.php-database-migration/environments';
+        $configDirectory = getcwd() . '/database/environments';
         $configLocator = new ConfigLocator($configDirectory);
 
         if ($env === null) {
@@ -78,6 +79,7 @@ class AbstractEnvCommand extends AbstractCommand
 
         $this->config = $conf;
 
+        $dotenvfile = ArrayUtil::get($conf['connection'], 'dotenvfile');
         $driver = ArrayUtil::get($conf['connection'], 'driver');
         $port = ArrayUtil::get($conf['connection'], 'port');
         $host = ArrayUtil::get($conf['connection'], 'host');
@@ -86,10 +88,31 @@ class AbstractEnvCommand extends AbstractCommand
         $password = ArrayUtil::get($conf['connection'], 'password');
         $charset = ArrayUtil::get($conf['connection'], 'charset');
 
+        if ( ($dotenvfile == 'system') || ( ($dotenvfile != '') && ($dotenvfile != 'no') ) ) {
+            if ($dotenvfile != 'system') {
+                $dotenv = new Dotenv(getcwd(), $dotenvfile);
+                $dotenv->overload(); //override system variables
+            }
+
+            $dotenvfile = getenv($dotenvfile);
+            $driver = getenv($driver);
+            $port = getenv($port);
+            $host = getenv($host);
+            $dbname = getenv($dbname);
+            $username = getenv($username);
+            $password = getenv($password);
+            $charset = getenv($charset);
+        }
+
         $uri = $driver;
 
         if ($driver == 'sqlite') {
             $uri .= ":$dbname";
+        } else if ($driver == 'pgsql') {
+            $uri .= ($dbname === null) ? '' : ":dbname=$dbname";
+            $uri .= ($host === null) ? '' : ";host=$host";
+            $uri .= ($port === null) ? '' : ";port=$port";
+            $uri .= ($charset === null) ? '' : ";options='--client_encoding=$charset'";
         }  else {
             $uri .= ($dbname === null) ? '' : ":dbname=$dbname";
             $uri .= ($host === null) ? '' : ";host=$host";

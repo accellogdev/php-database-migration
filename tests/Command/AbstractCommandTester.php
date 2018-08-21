@@ -27,7 +27,7 @@ class AbstractCommandTester extends \PHPUnit_Framework_TestCase
 
     public function cleanEnv()
     {
-        exec("rm -rf .php-database-migration");
+        exec("rm -rf database");
 
         if (file_exists('test.sqlite')) {
             exec("rm test.sqlite");

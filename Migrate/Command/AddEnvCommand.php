@@ -68,8 +68,21 @@ class AddEnvCommand extends AbstractEnvCommand {
             throw new \InvalidArgumentException("environment [$envName] is already defined!");
         }
 
-        $driverQuestion = new ChoiceQuestion("Please chose your pdo driver", $drivers);
-        $driver = $questions->ask($input, $output, $driverQuestion);
+        $systemvarQuestion = new Question("Read database connection variables from System Variables? <info>(yes/no)</info> <comment>[yes]</comment>: ", 'yes');
+        $systemvar = $questions->ask($input, $output, $systemvarQuestion);
+
+        if ($systemvar == 'yes') {
+            $dotenvfileQuestion = new Question("DotEnv filename (.env)? <info>(.envfilename/system - use System Variables)</info> <comment>[.env]</comment>: ", '.env');
+            $dotenvfile = $questions->ask($input, $output, $dotenvfileQuestion);
+
+            $driverQuestion = new Question("Please enter your pdo driver", $drivers);
+            $driver = $questions->ask($input, $output, $driverQuestion);
+        } else {
+            $dotenvfile = 'no';
+
+            $driverQuestion = new ChoiceQuestion("Please chose your pdo driver", $drivers);
+            $driver = $questions->ask($input, $output, $driverQuestion);
+        }
 
         $dbNameQuestion = new Question("Please enter the database name (or the database file location): ", "~");
         $dbName = $questions->ask($input, $output, $dbNameQuestion);
@@ -96,6 +109,7 @@ class AddEnvCommand extends AbstractEnvCommand {
         $defaultEditor = $questions->ask($input, $output, $defaultEditorQuestion);
 
         $confTemplate = file_get_contents(__DIR__ . '/../../templates/env.' . $format . '.tpl');
+        $confTemplate = str_replace('{DOTENVFILE}', $dotenvfile, $confTemplate);
         $confTemplate = str_replace('{DRIVER}', $driver, $confTemplate);
         $confTemplate = str_replace('{HOST}', $dbHost, $confTemplate);
         $confTemplate = str_replace('{PORT}', $dbPort, $confTemplate);

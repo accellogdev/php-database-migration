@@ -3,7 +3,7 @@ clean.sh
 tests/test.sqlite
 vendor
 /bin/phpunit
-.php-database-migration
+database
 .twgit_features_subject
 .idea
 `tty`

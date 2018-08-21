@@ -11,7 +11,7 @@ namespace Migrate\Enum;
 
 class Directory {
 
-    public static $appDirectory = '.php-database-migration';
+    public static $appDirectory = 'database';
 
     public static function getEnvPath()
     {
