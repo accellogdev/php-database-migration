@@ -8,3 +8,4 @@ database
 .idea
 `tty`
 composer.lock
+.env

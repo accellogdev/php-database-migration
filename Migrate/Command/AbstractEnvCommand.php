@@ -109,15 +109,15 @@ class AbstractEnvCommand extends AbstractCommand
         if ($driver == 'sqlite') {
             $uri .= ":$dbname";
         } else if ($driver == 'pgsql') {
-            $uri .= ($dbname === null) ? '' : ":dbname=$dbname";
-            $uri .= ($host === null) ? '' : ";host=$host";
-            $uri .= ($port === null) ? '' : ";port=$port";
-            $uri .= ($charset === null) ? '' : ";options='--client_encoding=$charset'";
+            $uri .= ( ($dbname === null) || ($dbname == '') ) ? '' : ":dbname=$dbname";
+            $uri .= ( ($host === null) || ($host == '') ) ? '' : ";host=$host";
+            $uri .= ( ($port === null) || ($port == '') ) ? '' : ";port=$port";
+            $uri .= ( ($charset === null) || ($charset == '') ) ? '' : ";options='--client_encoding=$charset'";
         }  else {
-            $uri .= ($dbname === null) ? '' : ":dbname=$dbname";
-            $uri .= ($host === null) ? '' : ";host=$host";
-            $uri .= ($port === null) ? '' : ";port=$port";
-            $uri .= ($charset === null) ? '' : ";charset=$charset";
+            $uri .= ( ($dbname === null) || ($dbname == '') ) ? '' : ":dbname=$dbname";
+            $uri .= ( ($host === null) || ($host == '') ) ? '' : ";host=$host";
+            $uri .= ( ($port === null) || ($port == '') ) ? '' : ";port=$port";
+            $uri .= ( ($charset === null) || ($charset == '') ) ? '' : ";charset=$charset";
         }
         $this->db = new \PDO(
             $uri,
