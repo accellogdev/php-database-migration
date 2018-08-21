@@ -5,3 +5,6 @@ vendor
 /bin/phpunit
 .php-database-migration
 .twgit_features_subject
+.idea
+`tty`
+composer.lock

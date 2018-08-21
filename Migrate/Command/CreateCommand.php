@@ -8,6 +8,7 @@
 namespace Migrate\Command;
 
 use Cocur\Slugify\Slugify;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -19,12 +20,19 @@ class CreateCommand extends AbstractEnvCommand
     {
         $this
             ->setName('migrate:create')
-            ->setDescription('Create a SQL migration');
+            ->setDescription('Create a SQL migration')
+            ->addArgument(
+                'env',
+                InputArgument::REQUIRED,
+                'Environment'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->checkEnv();
+
+        $this->init($input, $output);
 
         /* @var $questions QuestionHelper */
         $questions = $this->getHelperSet()->get('question');
@@ -32,7 +40,7 @@ class CreateCommand extends AbstractEnvCommand
         $descriptionQuestion = new Question("Please enter a description: ");
         $description = $questions->ask($input, $output, $descriptionQuestion);
 
-        $editorQuestion = new Question("Please chose which editor to use <info>(default vim)</info>: ", "vim");
+        $editorQuestion = new Question("Please chose which editor to use <info>(default " . $this->getDefaultEditor() . ")</info>: ", "vim");
         $questions->ask($input, $output, $editorQuestion);
 
         $slugger = new Slugify();
@@ -48,7 +56,7 @@ class CreateCommand extends AbstractEnvCommand
         $output->writeln("<info>$migrationFullPath created</info>");
 
         if (!defined('PHPUNIT')) {
-            system("vim $migrationFullPath  > `tty`");
+            system($this->getDefaultEditor() . " $migrationFullPath  > `tty`");
         }
     }
 

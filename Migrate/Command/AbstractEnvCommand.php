@@ -51,6 +51,11 @@ class AbstractEnvCommand extends AbstractCommand
         return ArrayUtil::get($this->getConfig(), 'changelog');
     }
 
+    public function getDefaultEditor()
+    {
+        return ArrayUtil::get($this->getConfig(), 'default_editor');
+    }
+    
     protected function checkEnv()
     {
         if (!file_exists(getcwd() . '/.php-database-migration/environments')) {
