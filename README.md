@@ -148,7 +148,7 @@ $ ./bin/migrate migrate:down [env] --to=[migrationid]
 ```
 
 
-Full Sample:
+**Full Sample:**
 
 ```
 cd your_project_directory
@@ -169,3 +169,46 @@ composer require valterfc/php-database-migration
 
 .\vendor\bin\migrate migrate:down dev
 ```
+### .env file
+
+**For .env file (copy .env.example to your .env file):**
+```
+DB_HOST=127.0.0.1
+DB_DRIVER=pgsql
+DB_PORT=5432
+DB_USER=postgres
+DB_PWD=1234
+DB_NAME=database_name
+DB_CHARSET=utf8
+```
+
+**How to use .env:**
+
+Create new env
+```
+.\vendor\bin\migrate migrate:addenv
+```
+
+Answer yes to this question
+```
+Read database connection variables from System Variables? (yes/no) [yes]:
+```
+
+Answer yes to this question
+```
+Read database connection variables from System Variables? (yes/no) [yes]:
+```
+
+Select your .env file
+```
+DotEnv filename (.env)? (.envfilename/system - use System Variables) [.env]:
+```
+
+In the next questions, respond with the name of the variables used in the .env file.
+
+Example:
+```
+Please enter your pdo driver: DB_DRIVER
+```
+
+Complete all fields
