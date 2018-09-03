@@ -157,17 +157,17 @@ composer init
 
 composer require valterfc/php-database-migration
 
-.\vendor\bin\migrate migrate:addenv
+./vendor/bin/migrate migrate:addenv
 
-.\vendor\bin\migrate migrate:init dev
+./vendor/bin/migrate migrate:init dev
 
-.\vendor\bin\migrate migrate:create dev
+./vendor/bin/migrate migrate:create dev
 
-.\vendor\bin\migrate migrate:status dev
+./vendor/bin/migrate migrate:status dev
 
-.\vendor\bin\migrate migrate:up dev
+./vendor/bin/migrate migrate:up dev
 
-.\vendor\bin\migrate migrate:down dev
+./vendor/bin/migrate migrate:down dev
 ```
 ### .env file
 
@@ -186,7 +186,7 @@ DB_CHARSET=utf8
 
 Create new env
 ```
-.\vendor\bin\migrate migrate:addenv
+./vendor/bin/migrate migrate:addenv
 ```
 
 Answer yes to this question
