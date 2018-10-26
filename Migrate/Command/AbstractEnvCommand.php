@@ -88,8 +88,16 @@ class AbstractEnvCommand extends AbstractCommand
         $password = ArrayUtil::get($conf['connection'], 'password');
         $charset = ArrayUtil::get($conf['connection'], 'charset');
 
+        $output->writeln("------");
+        $output->writeln("Migrate:Init");
+        $output->writeln("------");
+        $outParams = 'dotenvfile='.$dotenvfile.';driver='.$driver.';port='.$port.';host='.$host.';dbname='.$dbname.';username='.$username.';password='.$password.';charset='.$charset;
+        $output->writeln("parameters:\n" . $outParams . ";");
+
         if ( ($dotenvfile == 'system') || ( ($dotenvfile != '') && ($dotenvfile != 'no') ) ) {
             if ($dotenvfile != 'system') {
+                $output->writeln("");
+                $output->writeln(".env configuration - DIR-File:\n" . getcwd() . " - " . $dotenvfile);
                 $dotenv = new Dotenv(getcwd(), $dotenvfile);
                 $dotenv->overload(); //override system variables
             }
@@ -102,7 +110,13 @@ class AbstractEnvCommand extends AbstractCommand
             $username = getenv($username);
             $password = getenv($password);
             $charset = getenv($charset);
+
+            $outParams = 'dotenvfile='.$dotenvfile.';driver='.$driver.';port='.$port.';host='.$host.';dbname='.$dbname.';username='.$username.';password='.$password.';charset='.$charset;
+            $output->writeln("");
+            $output->writeln("parameters read from .env:\n" . $outParams);
         }
+
+        $output->writeln("------");
 
         $uri = $driver;
 
