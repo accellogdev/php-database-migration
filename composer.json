@@ -1,7 +1,7 @@
 {
-    "name": "valterfc/php-database-migration",
+    "name": "accellog/php-database-migration",
     "description": "rake and mybatis SQL migration tool",
-    "homepage": "https://github.com/valterfc/php-database-migration",
+    "homepage": "https://bitbucket.org/accellog/php-database-migration",
     "keywords": ["rake", "mybatis", "migration", "sql"],
     "type": "library",
     "license": "MIT",
@@ -18,7 +18,7 @@
         "symfony/config": "~2.6|~3.0",
         "cocur/slugify": "~1.0",
         "symfony/yaml": "~2.6|~3.0",
-        "vlucas/phpdotenv": "^2.5"
+        "accellog/phpdotenv": "^2.5"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
