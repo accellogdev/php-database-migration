@@ -37,6 +37,9 @@ class CreateCommand extends AbstractEnvCommand
         /* @var $questions QuestionHelper */
         $questions = $this->getHelperSet()->get('question');
 
+        $versionQuestion = new Question("Please chose your version <info>(default '')</info>: ", "");
+        $version = $questions->ask($input, $output, $versionQuestion);
+
         $descriptionQuestion = new Question("Please enter a description: ");
         $description = $questions->ask($input, $output, $descriptionQuestion);
 
@@ -46,7 +49,11 @@ class CreateCommand extends AbstractEnvCommand
         $slugger = new Slugify();
         $filename = $slugger->slugify($description);
         $timestamp = str_pad(str_replace(".", "", microtime(true)), 14, "0");
-        $filename = $timestamp . '_' . $filename . '.sql';
+        if ($version != '') {
+            $filename = $timestamp . '_' . $version . '_' . $filename . '.sql';
+        } else {
+            $filename = $timestamp . '_' . $filename . '.sql';
+        }
 
         $templateFile = file_get_contents(__DIR__ . '/../../templates/migration.tpl');
         $templateFile = str_replace('{DESCRIPTION}', $description, $templateFile);

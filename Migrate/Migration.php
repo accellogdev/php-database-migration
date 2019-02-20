@@ -140,8 +140,13 @@ class Migration
         $migration = new self();
         $migration->setId($data[0]);
         $migration->setAppliedAt(null);
-        $migration->setVersion(null);
-        $migration->setDescription(str_replace('.sql', '', str_replace('-', ' ', $data[1])));
+        if (count($data) >= 3) {
+            $migration->setVersion($data[1]);
+            $migration->setDescription(str_replace('.sql', '', str_replace('-', ' ', $data[2])));
+        } else {
+            $migration->setVersion(null);
+            $migration->setDescription(str_replace('.sql', '', str_replace('-', ' ', $data[1])));
+        }
         $migration->setFile($filename);
         $migration->load($migrationDir);
 
@@ -157,7 +162,11 @@ class Migration
         $migration->setDescription(ArrayUtil::get($data, 'description'));
 
         $slugger = new Slugify();
-        $filename = $migration->getId() . '_' . $slugger->slugify($migration->getDescription()) . '.sql';
+        if (($migration->getVersion() != null) && ($migration->getVersion() != '')) {
+            $filename = $migration->getId() . '_' . $migration->getVersion() . '_' . $slugger->slugify($migration->getDescription()) . '.sql';
+        } else {
+            $filename = $migration->getId() . '_' . $slugger->slugify($migration->getDescription()) . '.sql';
+        }
         $migration->setFile($filename);
 
         $migration->load($migrationDir);
