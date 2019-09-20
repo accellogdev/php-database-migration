@@ -253,7 +253,9 @@ class AbstractEnvCommand extends AbstractCommand
      */
     public function executeUpMigration(Migration $migration, $changeLogOnly = false)
     {
-        $this->getDb()->beginTransaction();
+        if ($migration->getUseTransaction()) {
+            $this->getDb()->beginTransaction();
+        }
 
         if ($changeLogOnly === false) {
             $result = $this->getDb()->exec($migration->getSqlUp());
@@ -265,13 +267,17 @@ class AbstractEnvCommand extends AbstractCommand
                 foreach ($errorInfos as $line) {
                     $errorInfo .= "\n$line";
                 }
-                $this->getDb()->rollBack();
+                if ($migration->getUseTransaction()) {
+                    $this->getDb()->rollBack();
+                }
                 throw new \RuntimeException("migration error, some SQL may be wrong\n\nid: {$migration->getId()}\nfile: {$migration->getFile()}\n" . $errorInfo);
             }
         }
 
         $this->saveToChangelog($migration);
-        $this->getDb()->commit();
+        if ($migration->getUseTransaction()) {
+            $this->getDb()->commit();
+        }
     }
 
     /**
@@ -280,7 +286,9 @@ class AbstractEnvCommand extends AbstractCommand
      */
     public function executeDownMigration(Migration $migration, $changeLogOnly = false)
     {
-        $this->getDb()->beginTransaction();
+        if ($migration->getUseTransaction()) {
+            $this->getDb()->beginTransaction();
+        }
 
         if ($changeLogOnly === false) {
             $result = $this->getDb()->exec($migration->getSqlDown());
@@ -292,12 +300,16 @@ class AbstractEnvCommand extends AbstractCommand
                 foreach ($errorInfos as $line) {
                     $errorInfo .= "\n$line";
                 }
-                $this->getDb()->rollBack();
+                if ($migration->getUseTransaction()) {
+                    $this->getDb()->rollBack();
+                }
                 throw new \RuntimeException("migration error, some SQL may be wrong\n\nid: {$migration->getId()}\nfile: {$migration->getFile()}\n" . $errorInfo);
             }
         }
         $this->removeFromChangelog($migration);
-        $this->getDb()->commit();
+        if ($migration->getUseTransaction()) {
+            $this->getDb()->commit();
+        }
     }
 
     protected function filterMigrationsToExecute(InputInterface $input, OutputInterface $output)

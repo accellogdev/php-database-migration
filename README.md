@@ -1,6 +1,12 @@
 PhpDbMigration - full PHP database migration tool
 =================================================
 
+**Correções/Melhorias**
+```
+- 2019-09-20 - adicionado tag "-- @DISABLE_TRANSACTION" que desativa a transação no arquivo de migrate (CUIDADO)
+```
+-------------------
+
 This is a full standalone PHP tool based on [Symfony Console](http://symfony.com/doc/current/components/console)
 and inspired by the Rails database migration tool and MyBatis. It merges the functionality of the two tools and
 has been designed to be as flexible as possible.
@@ -103,7 +109,7 @@ $ ./bin/migrate migrate:status [env]
 +----------------+---------+------------------+--------------------+
 | id             | version | applied at       | description        |
 +----------------+---------+------------------+--------------------+
-| 14679010838251 |         |                  | create table users |
+| 14679010838251 | v1.0    |                  | create table users |
 +----------------+---------+------------------+--------------------+
 ```
 

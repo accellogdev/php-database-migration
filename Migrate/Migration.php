@@ -17,6 +17,7 @@ class Migration
     private $description;
     private $file;
     private $appliedAt;
+    private $useTransaction = true;
     private $version;
     private $sqlUp;
     private $sqlDown;
@@ -83,6 +84,22 @@ class Migration
     public function setAppliedAt($appliedAt)
     {
         $this->appliedAt = $appliedAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUseTransaction()
+    {
+        return $this->useTransaction;
+    }
+
+    /**
+     * @param mixed $useTransaction
+     */
+    public function setUseTransaction($useTransaction)
+    {
+        $this->useTransaction = $useTransaction;
     }
 
     /**
@@ -187,7 +204,13 @@ class Migration
     public function load($migrationDir)
     {
         $content = file_get_contents($migrationDir . '/' . $this->getFile());
+
         if ($content && strpos($content, '@UNDO') > 0) {
+            $this->setUseTransaction(true);
+            if (strpos($content, '-- @DISABLE_TRANSACTION') > 0) {
+                $this->setUseTransaction(false);
+            }
+
             $sql = explode('-- @UNDO', $content);
             $this->setSqlUp($sql[0]);
             $this->setSqlDown($sql[1]);
