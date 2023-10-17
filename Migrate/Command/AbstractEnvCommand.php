@@ -92,14 +92,17 @@ class AbstractEnvCommand extends AbstractCommand
         $output->writeln("Migrate:Init");
         $output->writeln("------");
         $outParams = 'dotenvfile='.$dotenvfile.';driver='.$driver.';port='.$port.';host='.$host.';dbname='.$dbname.';username='.$username.';password='.$password.';charset='.$charset;
-        $output->writeln("parameters:\n" . $outParams . ";");
+        $output->writeln("parameter names:\n" . $outParams . ";");
 
         if ( ($dotenvfile == 'system') || ( ($dotenvfile != '') && ($dotenvfile != 'no') ) ) {
             if ($dotenvfile != 'system') {
                 $output->writeln("");
                 $output->writeln(".env configuration - DIR-File:\n" . getcwd() . " - " . $dotenvfile);
-                $dotenv = new Dotenv(getcwd(), $dotenvfile);
-                $dotenv->overload(); //override system variables
+                // $dotenv = new Dotenv(getcwd(), $dotenvfile);
+                // $dotenv->overload(); //override system variables
+                // $dotenv = Dotenv\Dotenv::createImmutable(getcwd(), $dotenvfile); // retorna apenas através de $_ENV['variavel']
+                $dotenv = Dotenv::createUnsafeImmutable(getcwd(), $dotenvfile); // retorna em getenv('variavel') e $_ENV['variavel']
+                $dotenv->load();
             }
 
             $dotenvfile = getenv($dotenvfile);
@@ -109,11 +112,12 @@ class AbstractEnvCommand extends AbstractCommand
             $dbname = getenv($dbname);
             $username = getenv($username);
             $password = getenv($password);
-            $charset = getenv($charset);
+            // $charset = getenv($charset);
+            $charset = ArrayUtil::get(getenv($charset), 'charset');
 
             $outParams = 'dotenvfile='.$dotenvfile.';driver='.$driver.';port='.$port.';host='.$host.';dbname='.$dbname.';username='.$username.';password='.$password.';charset='.$charset;
             $output->writeln("");
-            $output->writeln("parameters read from .env:\n" . $outParams);
+            $output->writeln("parameter values read from .env:\n" . $outParams);
         }
 
         $output->writeln("------");
