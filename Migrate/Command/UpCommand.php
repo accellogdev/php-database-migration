@@ -78,6 +78,6 @@ class UpCommand extends AbstractEnvCommand {
             $output->writeln("");
         }
 
-        return 1;
+        return 0;
     }
 }

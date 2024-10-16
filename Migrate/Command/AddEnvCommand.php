@@ -122,6 +122,6 @@ class AddEnvCommand extends AbstractEnvCommand {
 
         file_put_contents($envConfigFile, $confTemplate);
 
-        return 1;
+        return 0;
     }
 }

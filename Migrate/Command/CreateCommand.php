@@ -66,7 +66,7 @@ class CreateCommand extends AbstractEnvCommand
             system($this->getDefaultEditor() . " $migrationFullPath  > `tty`");
         }
 
-        return 1;
+        return 0;
     }
 
 }
