@@ -28,7 +28,7 @@ class CreateCommand extends AbstractEnvCommand
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->checkEnv();
 
@@ -65,6 +65,8 @@ class CreateCommand extends AbstractEnvCommand
         if (!defined('PHPUNIT')) {
             system($this->getDefaultEditor() . " $migrationFullPath  > `tty`");
         }
+
+        return 1;
     }
 
 }

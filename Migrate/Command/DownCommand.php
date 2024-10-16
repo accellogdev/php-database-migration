@@ -48,7 +48,7 @@ class DownCommand extends AbstractEnvCommand {
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->checkEnv();
 
@@ -90,5 +90,7 @@ class DownCommand extends AbstractEnvCommand {
         } else {
             $output->writeln("<error>Rollback aborted</error>");
         }
+
+        return 1;
     }
 }

@@ -203,7 +203,7 @@ class Migration
 
     public function load($migrationDir)
     {
-        $content = file_get_contents($migrationDir . '/' . $this->getFile());
+        $content = @file_get_contents($migrationDir . '/' . $this->getFile());
 
         if ($content && strpos($content, '@UNDO') > 0) {
             $this->setUseTransaction(true);

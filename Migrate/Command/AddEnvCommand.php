@@ -29,7 +29,7 @@ class AddEnvCommand extends AbstractEnvCommand {
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $format = $input->getArgument('format');
         $supportedFormats = array_keys(ConfigLocator::$SUPPORTED_PARSERS);
@@ -55,7 +55,7 @@ class AddEnvCommand extends AbstractEnvCommand {
             mkdir($this->getMigrationDir());
         }
 
-        $drivers = pdo_drivers();
+        $drivers = pdo_drivers();        
 
         /* @var $questions QuestionHelper */
         $questions = $this->getHelperSet()->get('question');
@@ -75,7 +75,7 @@ class AddEnvCommand extends AbstractEnvCommand {
             $dotenvfileQuestion = new Question("DotEnv filename (.env)? <info>(.envfilename/system - use System Variables)</info> <comment>[.env]</comment>: ", '.env');
             $dotenvfile = $questions->ask($input, $output, $dotenvfileQuestion);
 
-            $driverQuestion = new Question("Please enter your pdo driver: ", $drivers);
+            $driverQuestion = new ChoiceQuestion("Please enter your pdo driver: ", $drivers);
             $driver = $questions->ask($input, $output, $driverQuestion);
         } else {
             $dotenvfile = 'no';
@@ -121,5 +121,7 @@ class AddEnvCommand extends AbstractEnvCommand {
         $confTemplate = str_replace('{EDITOR}', $defaultEditor, $confTemplate);
 
         file_put_contents($envConfigFile, $confTemplate);
+
+        return 1;
     }
 }

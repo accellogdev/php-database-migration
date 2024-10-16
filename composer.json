@@ -1,38 +1,47 @@
 {
-    "name": "accellog/php-database-migration",
-    "description": "rake and mybatis SQL migration tool",
-    "homepage": "https://bitbucket.org/accellog/php-database-migration",
-    "keywords": ["rake", "mybatis", "migration", "sql"],
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "GUIDET Alexandre",
-            "email": "alwex@free.fr"
-        }
-    ],
-    "require": {
-        "php": ">=8.2",
-        "symfony/console": "7.1.5",
-        "symfony/process": "^7.1.5",
-        "symfony/config": "7.1.1",
-        "cocur/slugify": "4.6.0",
-        "symfony/yaml": "7.1.5",
-        "vlucas/phpdotenv": "dev-master"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "*"
-    },
-    "bin": [
-        "bin/migrate"
-    ],
-    "config": {
-      "bin-dir": "bin"
-    },
-    "autoload": {
-      "psr-4": {"Migrate\\": "Migrate/"}
-    },
-    "autoload-dev": {
-      "psr-4": { "Migrate\\Test\\": "tests/" }
+  "name": "accellog/php-database-migration",
+  "description": "rake and mybatis SQL migration tool",
+  "homepage": "https://bitbucket.org/accellog/php-database-migration",
+  "keywords": [
+    "rake",
+    "mybatis",
+    "migration",
+    "sql"
+  ],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "GUIDET Alexandre",
+      "email": "alwex@free.fr"
     }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "symfony/console": "7.1.5",
+    "symfony/process": "^7.1.5",
+    "symfony/config": "7.1.1",
+    "cocur/slugify": "4.6.0",
+    "symfony/yaml": "7.1.5",
+    "vlucas/phpdotenv": "dev-master"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  },
+  "bin": [
+    "bin/migrate"
+  ],
+  "config": {
+    "bin-dir": "bin"
+  },
+  "autoload": {
+    "psr-4": {
+      "Migrate\\": "Migrate/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Migrate\\Test\\": "tests/"
+    }
+  }
 }

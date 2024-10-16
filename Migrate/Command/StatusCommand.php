@@ -30,7 +30,7 @@ class StatusCommand extends AbstractEnvCommand
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->init($input, $output);
 
@@ -45,5 +45,7 @@ class StatusCommand extends AbstractEnvCommand
         }
 
         $table->render();
+
+        return 1;
     }
 }

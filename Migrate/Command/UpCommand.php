@@ -46,7 +46,7 @@ class UpCommand extends AbstractEnvCommand {
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->checkEnv();
 
@@ -77,5 +77,7 @@ class UpCommand extends AbstractEnvCommand {
             $progress->finish();
             $output->writeln("");
         }
+
+        return 1;
     }
 }

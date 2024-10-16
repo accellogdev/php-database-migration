@@ -26,7 +26,7 @@ class InitCommand extends AbstractEnvCommand {
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->init($input, $output);
 
@@ -43,6 +43,8 @@ class InitCommand extends AbstractEnvCommand {
         ");
 
         $output->writeln("changelog table ($changelog) successfully created");
+
+        return 1;
     }
 
 }
