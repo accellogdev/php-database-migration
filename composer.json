@@ -18,11 +18,11 @@
   ],
   "require": {
     "php": ">=8.5.3",
-    "symfony/console": "7.1.5",
-    "symfony/process": "^7.1.5",
-    "symfony/config": "7.1.1",
+    "symfony/console": "8.0.6",
+    "symfony/process": "8.0.5",
+    "symfony/config": "8.0.6",
     "cocur/slugify": "4.7.1",
-    "symfony/yaml": "7.1.5",
+    "symfony/yaml": "8.0.6",
     "vlucas/phpdotenv": "dev-master"
   },
   "require-dev": {
