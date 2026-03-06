@@ -24,12 +24,10 @@ class EnvFormatsTest extends AbstractCommandTester
         $this->cleanEnv();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Invalid file format: xml
-     */
     public function testUnsupportedXmlFormat()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Invalid file format: xml');
         $this->createEnv('xml');
         $this->cleanEnv();
     }

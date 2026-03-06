@@ -15,13 +15,13 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class InitCommandTest extends AbstractCommandTester
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $this->cleanEnv();
         $this->createEnv();
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         $this->cleanEnv();
     }
@@ -29,7 +29,7 @@ class InitCommandTest extends AbstractCommandTester
     public function testExecute()
     {
         $application = new Application();
-        $application->add(new InitCommand());
+        $application->addCommands([new InitCommand()]);
 
         $command = $application->find('migrate:init');
         $commandTester = new CommandTester($command);

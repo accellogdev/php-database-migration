@@ -21,11 +21,14 @@ use Migrate\Command\AddEnvCommand;
 use Migrate\Command\StatusCommand;
 
 $application = new Application();
-//$application->add(new InitCommand());
-$application->add(new CreateCommand());
-$application->add(new DownCommand());
-$application->add(new UpCommand());
-$application->add(new AddEnvCommand());
-$application->add(new StatusCommand());
-$application->add(new InitCommand());
+
+$application->addCommands([
+    new CreateCommand(),
+    new DownCommand(),
+    new UpCommand(),
+    new AddEnvCommand(),
+    new StatusCommand(),
+    new InitCommand(),
+]);
+
 $application->run();

@@ -10,9 +10,7 @@ namespace Migrate\Command;
 
 
 use Migrate\Test\Command\AbstractCommandTester;
-use Migrate\Utils\InputStreamUtil;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Tester\CommandTester;
 
 define('PHPUNIT', true);
@@ -20,14 +18,14 @@ define('PHPUNIT', true);
 class CreateCommandTest extends AbstractCommandTester
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->cleanEnv();
         $this->createEnv();
         $this->initEnv();
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         $this->cleanEnv();
     }
@@ -35,17 +33,20 @@ class CreateCommandTest extends AbstractCommandTester
     public function testExecute()
     {
         $application = new Application();
-        $application->add(new CreateCommand());
+        $application->addCommands([new CreateCommand()]);
 
         $command = $application->find('migrate:create');
         $commandTester = new CommandTester($command);
-        /* @var $question QuestionHelper */
-        $question = $command->getHelper('question');
-        $question->setInputStream(InputStreamUtil::type("je suis une super migration &&&ééé\n\n:x\n"));
+        
+        $commandTester->setInputs([
+            'je suis une super migration &&&ééé',
+            '',   // default migration type
+            ':x'  // exit editor
+        ]);
 
-        $commandTester->execute(array('command' => $command->getName()));
+        $commandTester->execute(['command' => $command->getName()]);
 
-        $matches = array();
+        $matches = [];
         preg_match('/.*: (.*) created/', $commandTester->getDisplay(), $matches);
 
         $fileName = $matches[1];
@@ -53,7 +54,12 @@ class CreateCommandTest extends AbstractCommandTester
         $this->assertFileExists($fileName);
         $content = file_get_contents($fileName);
         $expected =<<<EXPECTED
--- // je suis une super migration &&&ééé\n-- Migration SQL that makes the change goes here.\n\n-- @UNDO\n-- SQL to undo the change goes here.\n
+-- // je suis une super migration &&&ééé
+-- Migration SQL that makes the change goes here.
+
+-- @UNDO
+-- SQL to undo the change goes here.
+
 EXPECTED;
 
         $this->assertEquals($expected, $content);

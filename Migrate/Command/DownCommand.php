@@ -8,20 +8,20 @@
 namespace Migrate\Command;
 
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(name: 'migrate:down', description: 'Rollback all waiting migration down to [to] option if precised')]
 class DownCommand extends AbstractEnvCommand {
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
-            ->setName('migrate:down')
-            ->setDescription('Rollback all waiting migration down to [to] option if precised')
             ->addArgument(
                 'env',
                 InputArgument::REQUIRED,
@@ -55,11 +55,9 @@ class DownCommand extends AbstractEnvCommand {
         $this->init($input, $output);
 
         $changeLogOnly = (bool) $input->getOption('changelog-only');
-        /* @var $questions QuestionHelper */
-        $questions = $this->getHelperSet()->get('question');
+        $questions = new SymfonyStyle($input, $output);
 
-        $areYouSureQuestion = new Question("Are you sure? <info>(yes/no)</info> <comment>[no]</comment>: ", 'no');
-        $areYouSure = $questions->ask($input, $output, $areYouSureQuestion);
+        $areYouSure = $questions->ask("Are you sure? (yes/no)", 'no');
 
         if ($areYouSure == 'yes') {
 

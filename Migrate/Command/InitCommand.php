@@ -7,23 +7,21 @@
 
 namespace Migrate\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'migrate:init', description: 'Create the changelog table on your environment database')]
 class InitCommand extends AbstractEnvCommand {
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setName('migrate:init')
-            ->setDescription('Create the changelog table on your environment database')
-            ->addArgument(
-                'env',
-                InputArgument::REQUIRED,
-                'Environment'
-            )
-        ;
+        $this->addArgument(
+            'env',
+            InputArgument::REQUIRED,
+            'Environment'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) : int
