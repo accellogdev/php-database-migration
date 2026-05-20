@@ -21,7 +21,7 @@ class UpDownCommandTest extends AbstractCommandTester
 {
     public static $application;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->cleanEnv();
         $this->createEnv();
@@ -32,21 +32,19 @@ class UpDownCommandTest extends AbstractCommandTester
         $this->createMigration('2', "INSERT INTO test VALUES (2, 'two');",              "DELETE FROM test WHERE id = 2;");
 
         self::$application = new Application();
-        self::$application->add(new UpCommand());
-        self::$application->add(new DownCommand());
-        self::$application->add(new StatusCommand());
+        self::$application->addCommand(new UpCommand());
+        self::$application->addCommand(new DownCommand());
+        self::$application->addCommand(new StatusCommand());
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->cleanEnv();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testUpMigrationWithError()
     {
+        $this->expectException(\RuntimeException::class);
         $this->createMigration('3', "SELECT ;",   "SELECT ;");
         $command = self::$application->find('migrate:up');
         $commandTester = new CommandTester($command);
@@ -57,11 +55,9 @@ class UpDownCommandTest extends AbstractCommandTester
         ));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testDownMigrationWithError()
     {
+        $this->expectException(\RuntimeException::class);
         $this->createMigration('3', "SELECT 1;",   "SELECT ;");
 
 
@@ -251,7 +247,7 @@ EXPECTED;
         $pattern = '/^' . preg_quote($expected, '/') . '$/';
         $pattern = preg_replace('/DATE_REGEX */', $dateRegex, $pattern);
 
-        $this->assertRegExp($pattern, $commandTester->getDisplay());
+        $this->assertMatchesRegularExpression($pattern, $commandTester->getDisplay());
 
     }
 
@@ -361,12 +357,10 @@ EXPECTED;
         $this->assertEquals($expected, $commandTester->getDisplay());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage you are not in an initialized php-database-migration directory
-     */
     public function testUpInANotInitializedDirectory()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('you are not in an initialized php-database-migration directory');
         $this->cleanEnv();
 
         $command = self::$application->find('migrate:up');
@@ -387,12 +381,10 @@ EXPECTED;
         ));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage you are not in an initialized php-database-migration directory
-     */
     public function testDownInANotInitializedDirectory()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('you are not in an initialized php-database-migration directory');
         $this->cleanEnv();
 
         $command = self::$application->find('migrate:down');

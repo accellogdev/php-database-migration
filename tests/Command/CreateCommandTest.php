@@ -20,14 +20,14 @@ define('PHPUNIT', true);
 class CreateCommandTest extends AbstractCommandTester
 {
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->cleanEnv();
         $this->createEnv();
         $this->initEnv();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->cleanEnv();
     }
@@ -35,7 +35,7 @@ class CreateCommandTest extends AbstractCommandTester
     public function testExecute()
     {
         $application = new Application();
-        $application->add(new CreateCommand());
+        $application->addCommand(new CreateCommand());
 
         $command = $application->find('migrate:create');
         $commandTester = new CommandTester($command);
