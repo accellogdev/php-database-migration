@@ -7,19 +7,19 @@
 
 namespace Migrate\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'migrate:up', description: 'Execute all waiting migration up to [to] option if precised')]
 class UpCommand extends AbstractEnvCommand {
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
-            ->setName('migrate:up')
-            ->setDescription('Execute all waiting migration up to [to] option if precised')
             ->addArgument(
                 'env',
                 InputArgument::REQUIRED,

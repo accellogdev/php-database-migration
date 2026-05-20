@@ -9,25 +9,23 @@
 namespace Migrate\Command;
 
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'migrate:status', description: 'Display the current status of the specified environment')]
 class StatusCommand extends AbstractEnvCommand
 {
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setName('migrate:status')
-            ->setDescription('Display the current status of the specified environment')
-            ->addArgument(
-                'env',
-                InputArgument::REQUIRED,
-                'Environment'
-            )
-        ;
+        $this->addArgument(
+            'env',
+            InputArgument::REQUIRED,
+            'Environment'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) : int

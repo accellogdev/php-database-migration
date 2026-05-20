@@ -8,24 +8,23 @@
 namespace Migrate\Command;
 
 use Cocur\Slugify\Slugify;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(name: 'migrate:create', description: 'Create a SQL migration')]
 class CreateCommand extends AbstractEnvCommand
 {
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setName('migrate:create')
-            ->setDescription('Create a SQL migration')
-            ->addArgument(
-                'env',
-                InputArgument::REQUIRED,
-                'Environment'
-            );
+        $this->addArgument(
+            'env',
+            InputArgument::REQUIRED,
+            'Environment'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) : int
@@ -34,17 +33,13 @@ class CreateCommand extends AbstractEnvCommand
 
         $this->init($input, $output);
 
-        /* @var $questions QuestionHelper */
-        $questions = $this->getHelperSet()->get('question');
+        $questions = new SymfonyStyle($input, $output);
 
-        $versionQuestion = new Question("Please chose your version <info>(default '')</info>: ", "");
-        $version = $questions->ask($input, $output, $versionQuestion);
+        $version = $questions->ask("Please choose your version", "");
 
-        $descriptionQuestion = new Question("Please enter a description: ");
-        $description = $questions->ask($input, $output, $descriptionQuestion);
+        $description = $questions->ask("Please enter a description: ");
 
-        $editorQuestion = new Question("Please chose which editor to use <info>(default " . $this->getDefaultEditor() . ")</info>: ", "vim");
-        $questions->ask($input, $output, $editorQuestion);
+        $questions->ask("Please choose which editor to use", $this->getDefaultEditor());
 
         $slugger = new Slugify();
         $filename = $slugger->slugify($description);

@@ -10,12 +10,11 @@ namespace Migrate\Test\Command;
 use Migrate\Command\AddEnvCommand;
 use Migrate\Command\InitCommand;
 use Migrate\Enum\Directory;
-use Migrate\Utils\InputStreamUtil;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Tester\CommandTester;
+use PHPUnit\Framework\TestCase;
 
-class AbstractCommandTester extends \PHPUnit_Framework_TestCase
+class AbstractCommandTester extends TestCase
 {
     public static $env = 'testing';
     public static $driver = 'sqlite';
@@ -25,7 +24,7 @@ class AbstractCommandTester extends \PHPUnit_Framework_TestCase
     public static $host = 'localhost';
     public static $port = '5432';
 
-    public function cleanEnv()
+    public function cleanEnv(): void
     {
         exec("rm -rf database");
 
@@ -34,10 +33,10 @@ class AbstractCommandTester extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function createEnv($format = 'yml')
+    public function createEnv($format = 'yml'): void
     {
         $application = new Application();
-        $application->add(new AddEnvCommand());
+        $application->addCommands([new AddEnvCommand()]);
 
         $command = $application->find('migrate:addenv');
         $commandTester = new CommandTester($command);
@@ -45,17 +44,28 @@ class AbstractCommandTester extends \PHPUnit_Framework_TestCase
         $pdoDrivers = pdo_drivers();
         $driverKey = array_search('sqlite', $pdoDrivers);
 
-        /* @var $question QuestionHelper */
-        $question = $command->getHelper('question');
-        $question->setInputStream(InputStreamUtil::type("testing\n$driverKey\ntest.sqlite\n\n\n\n\n\nchangelog\nvim\n"));
+        $commandTester->setInputs([
+            'testing',           // env name
+            (string)$driverKey,  // driver
+            'no',                // Use system variables
+            'sqlite',            // driver choice
+            'test.sqlite',       // database
+            '',                  // host
+            '',                  // port
+            '',                  // username
+            '',                  // password
+            '',                  // charset
+            'changelog',         // changelog table
+            'vim'                // editor
+        ]);
 
-        $commandTester->execute(array('command' => $command->getName(), 'format' => $format));
+        $commandTester->execute(['format' => $format]);
     }
 
-    public function initEnv()
+    public function initEnv(): void
     {
         $application = new Application();
-        $application->add(new InitCommand());
+        $application->addCommands([new InitCommand()]);
 
         $command = $application->find('migrate:init');
         $commandTester = new CommandTester($command);
@@ -66,7 +76,7 @@ class AbstractCommandTester extends \PHPUnit_Framework_TestCase
         ));
     }
 
-    public function createMigration($timestamp, $sqlUp, $sqlDown)
+    public function createMigration($timestamp, $sqlUp, $sqlDown): void
     {
         $filename = Directory::getMigrationsPath() . '/' . $timestamp . '_migration.sql';
 

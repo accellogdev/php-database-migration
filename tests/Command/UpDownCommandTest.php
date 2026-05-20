@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User: aguidet
  * Date: 02/03/15
@@ -7,21 +8,18 @@
 
 namespace Command;
 
-
 use Migrate\Command\DownCommand;
 use Migrate\Command\StatusCommand;
 use Migrate\Command\UpCommand;
 use Migrate\Test\Command\AbstractCommandTester;
-use Migrate\Utils\InputStreamUtil;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class UpDownCommandTest extends AbstractCommandTester
 {
     public static $application;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->cleanEnv();
         $this->createEnv();
@@ -32,21 +30,21 @@ class UpDownCommandTest extends AbstractCommandTester
         $this->createMigration('2', "INSERT INTO test VALUES (2, 'two');",              "DELETE FROM test WHERE id = 2;");
 
         self::$application = new Application();
-        self::$application->add(new UpCommand());
-        self::$application->add(new DownCommand());
-        self::$application->add(new StatusCommand());
+        self::$application->addCommands([
+            new UpCommand(),
+            new DownCommand(),
+            new StatusCommand()
+        ]);
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         $this->cleanEnv();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testUpMigrationWithError()
     {
+        $this->expectException(\RuntimeException::class);
         $this->createMigration('3', "SELECT ;",   "SELECT ;");
         $command = self::$application->find('migrate:up');
         $commandTester = new CommandTester($command);
@@ -57,13 +55,10 @@ class UpDownCommandTest extends AbstractCommandTester
         ));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testDownMigrationWithError()
     {
+        $this->expectException(\RuntimeException::class);
         $this->createMigration('3', "SELECT 1;",   "SELECT ;");
-
 
         $command = self::$application->find('migrate:up');
         $commandTester = new CommandTester($command);
@@ -76,9 +71,7 @@ class UpDownCommandTest extends AbstractCommandTester
         $command = self::$application->find('migrate:down');
         $commandTester = new CommandTester($command);
 
-        /* @var $question QuestionHelper */
-        $question = $command->getHelper('question');
-        $question->setInputStream(InputStreamUtil::type("yes\n"));
+        $commandTester->setInputs(['yes']);
 
         $commandTester->execute(array(
             'command' => $command->getName(),
@@ -97,7 +90,7 @@ class UpDownCommandTest extends AbstractCommandTester
             'env' => 'testing'
         ));
 
-        $expected =<<<EXPECTED
+        $expected = <<<EXPECTED
 connected
 0/3 [>---------------------------] 0 % []
 1/3 [=========>------------------] 33 % [migration]
@@ -119,21 +112,17 @@ EXPECTED;
             'env' => 'testing'
         ));
 
-
-
         $command = self::$application->find('migrate:down');
         $commandTester = new CommandTester($command);
 
-        /* @var $question QuestionHelper */
-        $question = $command->getHelper('question');
-        $question->setInputStream(InputStreamUtil::type("yes\n"));
+        $commandTester->setInputs(['yes']);
 
         $commandTester->execute(array(
             'command' => $command->getName(),
             'env' => 'testing'
         ));
 
-        $expected =<<<EXPECTED
+        $expected = <<<EXPECTED
 connected
 Are you sure? (yes/no) [no]: 0/1 [>---------------------------] 0 % []
 1/1 [============================] 100 % [migration]
@@ -154,7 +143,7 @@ EXPECTED;
             '--only' => '1'
         ));
 
-        $expected =<<<EXPECTED
+        $expected = <<<EXPECTED
 connected
 0/1 [>---------------------------] 0 % []
 1/1 [============================] 100 % [migration]
@@ -174,7 +163,7 @@ EXPECTED;
         ));
 
 
-        $expected =<<<EXPECTED
+        $expected = <<<EXPECTED
 connected
 +----+---------+---------------------+-------------+
 | id | version | applied at          | description |
@@ -202,9 +191,7 @@ EXPECTED;
         $command = self::$application->find('migrate:down');
         $commandTester = new CommandTester($command);
 
-        /* @var $question QuestionHelper */
-        $question = $command->getHelper('question');
-        $question->setInputStream(InputStreamUtil::type("yes\n"));
+        $commandTester->setInputs(['yes']);
 
         $commandTester->execute(array(
             'command' => $command->getName(),
@@ -212,7 +199,7 @@ EXPECTED;
             '--only' => '1'
         ));
 
-        $expected =<<<EXPECTED
+        $expected = <<<EXPECTED
 connected
 Are you sure? (yes/no) [no]: 0/1 [>---------------------------] 0 % []
 1/1 [============================] 100 % [migration]
@@ -236,7 +223,7 @@ EXPECTED;
             'env' => 'testing'
         ));
 
-        $expected =<<<'EXPECTED'
+        $expected = <<<'EXPECTED'
 connected
 +----+---------+---------------------+-------------+
 | id | version | applied at          | description |
@@ -251,8 +238,7 @@ EXPECTED;
         $pattern = '/^' . preg_quote($expected, '/') . '$/';
         $pattern = preg_replace('/DATE_REGEX */', $dateRegex, $pattern);
 
-        $this->assertRegExp($pattern, $commandTester->getDisplay());
-
+        $this->assertMatchesRegularExpression($pattern, $commandTester->getDisplay());
     }
 
     public function testUpTo()
@@ -266,7 +252,7 @@ EXPECTED;
             '--to' => '1'
         ));
 
-        $expected =<<<EXPECTED
+        $expected = <<<EXPECTED
 connected
 0/2 [>---------------------------] 0 % []
 1/2 [==============>-------------] 50 % [migration]
@@ -287,7 +273,7 @@ EXPECTED;
         ));
 
 
-        $expected =<<<EXPECTED
+        $expected = <<<EXPECTED
 connected
 +----+---------+---------------------+-------------+
 | id | version | applied at          | description |
@@ -315,9 +301,7 @@ EXPECTED;
         $command = self::$application->find('migrate:down');
         $commandTester = new CommandTester($command);
 
-        /* @var $question QuestionHelper */
-        $question = $command->getHelper('question');
-        $question->setInputStream(InputStreamUtil::type("yes\n"));
+        $commandTester->setInputs(['yes']);
 
         $commandTester->execute(array(
             'command' => $command->getName(),
@@ -325,7 +309,7 @@ EXPECTED;
             '--to' => '1'
         ));
 
-        $expected =<<<EXPECTED
+        $expected = <<<EXPECTED
 connected
 Are you sure? (yes/no) [no]: 0/2 [>---------------------------] 0 % []
 1/2 [==============>-------------] 50 % [migration]
@@ -346,7 +330,7 @@ EXPECTED;
         ));
 
 
-        $expected =<<<EXPECTED
+        $expected = <<<EXPECTED
 connected
 +----+---------+---------------------+-------------+
 | id | version | applied at          | description |
@@ -361,12 +345,10 @@ EXPECTED;
         $this->assertEquals($expected, $commandTester->getDisplay());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage you are not in an initialized php-database-migration directory
-     */
     public function testUpInANotInitializedDirectory()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('you are not in an initialized php-database-migration directory');
         $this->cleanEnv();
 
         $command = self::$application->find('migrate:up');
@@ -376,23 +358,12 @@ EXPECTED;
             'command' => $command->getName(),
             'env' => 'testing',
         ));
-
-        $command = self::$application->find('migrate:down');
-        $commandTester = new CommandTester($command);
-
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-            'env' => 'testing',
-            '--to' => '1'
-        ));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage you are not in an initialized php-database-migration directory
-     */
     public function testDownInANotInitializedDirectory()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('you are not in an initialized php-database-migration directory');
         $this->cleanEnv();
 
         $command = self::$application->find('migrate:down');
@@ -401,15 +372,6 @@ EXPECTED;
         $commandTester->execute(array(
             'command' => $command->getName(),
             'env' => 'testing',
-        ));
-
-        $command = self::$application->find('migrate:down');
-        $commandTester = new CommandTester($command);
-
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-            'env' => 'testing',
-            '--to' => '1'
         ));
     }
 }

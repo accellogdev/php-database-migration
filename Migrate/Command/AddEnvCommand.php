@@ -8,25 +8,22 @@
 namespace Migrate\Command;
 
 use Migrate\Config\ConfigLocator;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(name: 'migrate:addenv', description: 'Initialise an environment to work with php db migrate')]
 class AddEnvCommand extends AbstractEnvCommand {
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setName('migrate:addenv')
-            ->setDescription('Initialise an environment to work with php db migrate')
-            ->addArgument(
-                'format',
-                InputArgument::OPTIONAL,
-                'Environment file format: (yml, json or php), default: yml'
-            )
-        ;
+        $this->addArgument(
+            'format',
+            InputArgument::OPTIONAL,
+            'Environment file format: (yml, json or php), default: yml'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) : int
@@ -57,56 +54,33 @@ class AddEnvCommand extends AbstractEnvCommand {
 
         $drivers = pdo_drivers();        
 
-        /* @var $questions QuestionHelper */
-        $questions = $this->getHelperSet()->get('question');
+        $questions = new SymfonyStyle($input, $output);
 
-        $envQuestion = new Question("Please enter the name of the new environment <info>(default dev)</info>: ", "dev");
-        $envName = $questions->ask($input, $output, $envQuestion );
+        $envName = $questions->ask("Please enter the name of the new environment", "dev");
 
         $envConfigFile = $this->getEnvironmentDir() . '/' . $envName . '.' . $format;
         if (file_exists($envConfigFile)) {
             throw new \InvalidArgumentException("environment [$envName] is already defined!");
         }
 
-        $systemvarQuestion = new Question("Read database connection variables from System Variables? <info>(yes/no)</info> <comment>[yes]</comment>: ", 'yes');
-        $systemvar = $questions->ask($input, $output, $systemvarQuestion);
+        $systemvar = $questions->ask("Read database connection variables from System Variables? (yes/no)", 'yes');
 
         if ($systemvar == 'yes') {
-            $dotenvfileQuestion = new Question("DotEnv filename (.env)? <info>(.envfilename/system - use System Variables)</info> <comment>[.env]</comment>: ", '.env');
-            $dotenvfile = $questions->ask($input, $output, $dotenvfileQuestion);
-
-            $driverQuestion = new ChoiceQuestion("Please enter your pdo driver: ", $drivers);
-            $driver = $questions->ask($input, $output, $driverQuestion);
+            $dotenvfile = $questions->ask("DotEnv filename (.env)?", '.env');
+            $driver = $questions->choice("Please enter your pdo driver: ", $drivers);
         } else {
             $dotenvfile = 'no';
-
-            $driverQuestion = new ChoiceQuestion("Please chose your pdo driver", $drivers);
-            $driver = $questions->ask($input, $output, $driverQuestion);
+            $driver = $questions->choice("Please choose your pdo driver", $drivers);
         }
 
-        $dbNameQuestion = new Question("Please enter the database name (or the database file location): ", "~");
-        $dbName = $questions->ask($input, $output, $dbNameQuestion);
-
-        $dbHostQuestion = new Question("Please enter the database host (if needed): ", "~");
-        $dbHost = $questions->ask($input, $output, $dbHostQuestion);
-
-        $dbPortQuestion = new Question("Please enter the database port (if needed): ", "~");
-        $dbPort = $questions->ask($input, $output, $dbPortQuestion);
-
-        $dbUserNameQuestion = new Question("Please enter the database user name (if needed): ", "~");
-        $dbUserName = $questions->ask($input, $output, $dbUserNameQuestion);
-
-        $dbUserPasswordQuestion = new Question("Please enter the database user password (if needed): ", "~");
-        $dbUserPassword = $questions->ask($input, $output, $dbUserPasswordQuestion);
-
-        $dbCharsetQuestion = new Question("Please enter the database charset (if needed): ", "~");
-        $dbCharset = $questions->ask($input, $output, $dbCharsetQuestion);
-
-        $changelogTableQuestion = new Question("Please enter the changelog table <info>(default changelog)</info>: ", "changelog");
-        $changelogTable = $questions->ask($input, $output, $changelogTableQuestion);
-
-        $defaultEditorQuestion = new Question("Please enter the text editor to use by default <info>(default vim)</info>: ", "vim");
-        $defaultEditor = $questions->ask($input, $output, $defaultEditorQuestion);
+        $dbName = $questions->ask("Please enter the database name (or the database file location): ", "~");
+        $dbHost = $questions->ask("Please enter the database host (if needed): ", "~");
+        $dbPort = $questions->ask("Please enter the database port (if needed): ", "~");
+        $dbUserName = $questions->ask("Please enter the database user name (if needed): ", "~");
+        $dbUserPassword = $questions->ask("Please enter the database user password (if needed): ", "~");
+        $dbCharset = $questions->ask("Please enter the database charset (if needed): ", "~");
+        $changelogTable = $questions->ask("Please enter the changelog table (default changelog): ", "changelog");
+        $defaultEditor = $questions->ask("Please enter the text editor to use by default (default vim): ", "vim");
 
         $confTemplate = file_get_contents(__DIR__ . '/../../templates/env.' . $format . '.tpl');
         $confTemplate = str_replace('{DOTENVFILE}', $dotenvfile, $confTemplate);
