@@ -15,7 +15,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class AbstractCommandTester extends \PHPUnit_Framework_TestCase
+class AbstractCommandTester extends \PHPUnit\Framework\TestCase
 {
     public static $env = 'testing';
     public static $driver = 'sqlite';
@@ -37,7 +37,7 @@ class AbstractCommandTester extends \PHPUnit_Framework_TestCase
     public function createEnv($format = 'yml')
     {
         $application = new Application();
-        $application->add(new AddEnvCommand());
+        $application->addCommand(new AddEnvCommand());
 
         $command = $application->find('migrate:addenv');
         $commandTester = new CommandTester($command);
@@ -55,7 +55,7 @@ class AbstractCommandTester extends \PHPUnit_Framework_TestCase
     public function initEnv()
     {
         $application = new Application();
-        $application->add(new InitCommand());
+        $application->addCommand(new InitCommand());
 
         $command = $application->find('migrate:init');
         $commandTester = new CommandTester($command);

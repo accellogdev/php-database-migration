@@ -16,12 +16,12 @@ use Migrate\Test\Command\AbstractCommandTester;
 
 class AddenvCommandTest extends AbstractCommandTester
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->cleanEnv();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->cleanEnv();
     }
@@ -29,7 +29,7 @@ class AddenvCommandTest extends AbstractCommandTester
     public function testExecute()
     {
         $application = new Application();
-        $application->add(new AddEnvCommand());
+        $application->addCommand(new AddEnvCommand());
 
         $command = $application->find('migrate:addenv');
         $commandTester = new CommandTester($command);
@@ -50,7 +50,7 @@ class AddenvCommandTest extends AbstractCommandTester
 
         $expected = "Please enter the name of the new environment (default dev): Please chose your pdo driver\n$driverSelect > 0\nPlease enter the database name (or the database file location): Please enter the database host (if needed): Please enter the database port (if needed): Please enter the database user name (if needed): Please enter the database user password (if needed): Please enter the changelog table (default changelog): Please enter the text editor to use by default (default vim): ";
         
-        $this->assertRegExp('/Please enter the name of the new environment/', $commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/Please enter the name of the new environment/', $commandTester->getDisplay());
 
         $envDir = Directory::getEnvPath();
 
