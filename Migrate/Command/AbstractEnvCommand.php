@@ -112,8 +112,7 @@ class AbstractEnvCommand extends AbstractCommand
             $dbname = getenv($dbname);
             $username = getenv($username);
             $password = getenv($password);
-            // $charset = getenv($charset);
-            $charset = ArrayUtil::get(getenv($charset), 'charset');
+            $charset = $charset ? getenv($charset) : null;
 
             $outParams = 'dotenvfile='.$dotenvfile.';driver='.$driver.';port='.$port.';host='.$host.';dbname='.$dbname.';username='.$username.';password='.$password.';charset='.$charset;
             $output->writeln("");
@@ -121,6 +120,9 @@ class AbstractEnvCommand extends AbstractCommand
         }
 
         $output->writeln("------");
+
+        // charset padrão quando não informado (null, '' ou variável de ambiente inexistente)
+        $charset = $charset ?: 'utf8';
 
         $uri = $driver;
 
@@ -130,12 +132,12 @@ class AbstractEnvCommand extends AbstractCommand
             $uri .= ( ($dbname === null) || ($dbname == '') ) ? '' : ":dbname=$dbname";
             $uri .= ( ($host === null) || ($host == '') ) ? '' : ";host=$host";
             $uri .= ( ($port === null) || ($port == '') ) ? '' : ";port=$port";
-            $uri .= ( ($charset === null) || ($charset == '') ) ? '' : ";options='--client_encoding=$charset'";
+            $uri .= ";options='--client_encoding=$charset'";
         }  else {
             $uri .= ( ($dbname === null) || ($dbname == '') ) ? '' : ":dbname=$dbname";
             $uri .= ( ($host === null) || ($host == '') ) ? '' : ";host=$host";
             $uri .= ( ($port === null) || ($port == '') ) ? '' : ";port=$port";
-            $uri .= ( ($charset === null) || ($charset == '') ) ? '' : ";charset=$charset";
+            $uri .= ";charset=$charset";
         }
         $this->db = new \PDO(
             $uri,
