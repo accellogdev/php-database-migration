@@ -112,7 +112,7 @@ class AbstractEnvCommand extends AbstractCommand
             $dbname = getenv($dbname);
             $username = getenv($username);
             $password = getenv($password);
-            $charset = $charset ? getenv($charset) : null;
+            $charset = getenv($charset ?: 'charset');
 
             $outParams = 'dotenvfile='.$dotenvfile.';driver='.$driver.';port='.$port.';host='.$host.';dbname='.$dbname.';username='.$username.';password='.$password.';charset='.$charset;
             $output->writeln("");
